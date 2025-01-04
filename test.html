@@ -7,6 +7,7 @@
         input { width: 300px; padding: 5px; margin-right: 10px; }
         button { padding: 5px 15px; }
         pre { background: #f4f4f4; padding: 15px; margin-top: 20px; }
+        .error { color: red; }
     </style>
 </head>
 <body>
@@ -15,23 +16,35 @@
     <pre id="result">Results will appear here...</pre>
 
     <script>
+        // Replace with your Render.com URL
+        const API_URL = 'https://telegram-scraper-5bj8.onrender.com/scrape';
+
         async function scrapeChannel() {
             const channelUrl = document.getElementById('channelUrl').value;
             document.getElementById('result').textContent = 'Scraping...';
             
             try {
-                const response = await fetch('http://localhost:5000/scrape', {
+                console.log('Sending request to:', API_URL);
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ channel_url: channelUrl })
                 });
                 
+                console.log('Response status:', response.status);
                 const data = await response.json();
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                
+                if (response.ok) {
+                    document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                } else {
+                    document.getElementById('result').innerHTML = `<span class="error">Error: ${data.error || 'Unknown error'}</span>`;
+                }
             } catch (error) {
-                document.getElementById('result').textContent = 'Error: ' + error.message;
+                console.error('Fetch error:', error);
+                document.getElementById('result').innerHTML = `<span class="error">Error: ${error.message}</span>`;
             }
         }
     </script>
