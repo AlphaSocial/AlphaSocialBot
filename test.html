@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Scraper Test</title>
+    <style>
+        body { padding: 20px; font-family: Arial, sans-serif; }
+        input { width: 300px; padding: 5px; margin-right: 10px; }
+        button { padding: 5px 15px; }
+        pre { background: #f4f4f4; padding: 15px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <input type="text" id="channelUrl" value="https://t.me/alphasocialbutchannel">
+    <button onclick="scrapeChannel()">Scrape Channel</button>
+    <pre id="result">Results will appear here...</pre>
+
+    <script>
+        async function scrapeChannel() {
+            const channelUrl = document.getElementById('channelUrl').value;
+            document.getElementById('result').textContent = 'Scraping...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/scrape', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ channel_url: channelUrl })
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
